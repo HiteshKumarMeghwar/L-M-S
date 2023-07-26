@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/HiteshKumarMeghwar/L-M-S/domain"
 	"github.com/HiteshKumarMeghwar/L-M-S/model"
@@ -40,4 +41,26 @@ func (n *UserController) CreateUser(ctx *fiber.Ctx) error {
 
 	response = model.Response{StatusCode: http.StatusOK, Message: "Inserted Successfully"}
 	return ctx.Status(http.StatusOK).JSON(response)
+}
+
+func (n *UserController) GetUserById(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid id (cannot be null / 0)"})
+	}
+
+	user, err := n.userUsecase.GetUserById(idInt)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	var res model.Response
+	if user.Name != "" {
+		res = model.Response{StatusCode: http.StatusOK, Message: "Get user by id success", Data: user}
+	} else {
+		res = model.Response{StatusCode: http.StatusOK, Message: "Get user by id success (Null data)"}
+	}
+
+	return ctx.Status(http.StatusOK).JSON(res)
 }

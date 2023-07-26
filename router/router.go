@@ -11,5 +11,7 @@ func NewRouter(router *fiber.App, userController *controller.UserController) *fi
 	})
 
 	router.Post("/create_user", userController.CreateUser)
+	router.Get("/user/:id", userController.GetUserById)
+
 	return router
 }
